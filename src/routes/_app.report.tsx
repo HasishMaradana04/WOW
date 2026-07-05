@@ -3,7 +3,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, Bot, CheckCircle2, Cloud, Crosshair, ImageOff, Loader2, Sparkles, Upload, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { useServerFn } from "@tanstack/react-start";
 import { GlassCard } from "@/components/GlassCard";
 import { AqiBadge } from "@/components/AqiBadge";
 import type { ReportCategory } from "@/lib/mock-data";
@@ -89,8 +88,6 @@ function Report() {
   const [locLoading, setLocLoading] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
-  const classify = useServerFn(classifyEnvironmentImage);
-
   const analyze = () => {
     if (validation.status !== "valid") return;
     setLoading(true);
@@ -108,7 +105,7 @@ function Report() {
     try {
       const dataUrl = await fileToDataUrl(file);
       setPhoto(dataUrl);
-      const res = await classify({ data: { imageDataUrl: dataUrl } });
+      const res = await classifyEnvironmentImage(dataUrl);
       if (res.valid) {
         setValidation({ status: "valid", label: res.label });
         const mapped = labelToCategory[res.label];
